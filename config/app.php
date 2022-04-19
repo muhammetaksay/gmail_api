@@ -162,6 +162,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Dacastro4\LaravelGmail\LaravelGmailServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -231,6 +232,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'LaravelGmail' => Dacastro4\LaravelGmail\Facade\LaravelGmail::class,
+        'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 
     ],
 

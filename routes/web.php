@@ -15,14 +15,13 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Auth::routes();
 
 
 Route::get('/', function (){
     return view('welcome');
 });
 
-Route::get('test', [HomeController::class, 'index']);
+Route::get('checkmail', [HomeController::class, 'index']);
 Route::get('customers', [CustomerController::class, 'index'])->name("customers");
 Route::get('customers/{id}', [CustomerController::class, 'show'])->name("customer.show");
 
@@ -33,10 +32,13 @@ Route::get('/oauth/gmail', function (){
 
 Route::get('/oauth/gmail/callback', function (){
     LaravelGmail::makeToken();
-    return redirect()->to('/test');
+    return redirect()->to('/customers');
 });
 
 Route::get('/oauth/gmail/logout', function (){
     LaravelGmail::logout(); //It returns exception if fails
     return redirect()->to('/');
 });
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'home'])->name('home');

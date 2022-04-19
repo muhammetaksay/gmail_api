@@ -38,23 +38,15 @@ class HomeController extends Controller
 
     public function index($pageToken=null){
         // $accessToken = LaravelGmail::makeToken();
-        //     @if(LaravelGmail::check())
-        //     <a href="{{ url('oauth/gmail/logout') }}">logout</a>
-        // @else
-        //     <a href="{{ url('oauth/gmail') }}">login</a>
-        // @endif
-        // dd(LaravelGmail::check());
         if (LaravelGmail::check()) {
             // $messages = Http::get($this->url."messages?maxResults=10&q=in:inbox&access_token=".$this->access_token."&pageToken=".$pageToken);
             $messages = Http::get($this->url."messages?q=in:inbox&access_token=".$this->access_token."&pageToken=".$pageToken);
-            // dd($response);,
             $customers = array();
             $messages = json_decode($messages)->messages;
             $sayac = 0;
             foreach($messages as $message){
 
                     $messageDetail = Http::get("https://gmail.googleapis.com/gmail/v1/users/me/messages/".$message->threadId."?access_token=".$this->access_token);
-                    // return $this->gmailBodyDecode(json_decode($messageDetail)->raw);
                     $messageExport = '';
                     $json = json_decode($messageDetail)->payload->headers;
                     $from = '';
@@ -67,22 +59,16 @@ class HomeController extends Controller
                             $customers[$message->threadId] = $header->value;
                         }
                     }
-                // $sayac++;
                     $personal_id = Personals::where("mail", $this->user)->first()->id;
-                 // return $customers->id;                 
 
                  if(isset(json_decode($messageDetail)->payload->parts)){
                      $parts = json_decode($messageDetail)->payload->parts;
                      foreach($parts as $part){
                          $messageExport .= isset($part->body->data) ? $part->body->data : '';
                      }
-                     // return "parts";
                  }else{
-                    //  return json_decode($messageDetail)->payload->body->data;
                      $messageExport .= json_decode($messageDetail)->payload->body->data;
                  }
-                //  echo "<p>".$messageExport."</p>";
-
                 $mails = Mails::updateOrCreate([
                     'mail_id' => $message->threadId,
                     'personal_id' => $personal_id,
@@ -92,10 +78,6 @@ class HomeController extends Controller
                     'mail_content' => $messageExport,
                     'snippet' => $snippet
                 ]);
-                
-                
-
-
             }
             // dd($customers);
             foreach($customers as $ckey => $cvalue){
@@ -111,19 +93,10 @@ class HomeController extends Controller
                 ],[
                     'email' => $email, 'name' => $email, 'personal_id' => $this->personal_id
                 ]);
-                
-                // echo $customers->id;
                 $mails = Mails::where('mail_id', $ckey)->first();
                 $mails->customer_id = $customers->id;
                 $mails->save();
             }
-
-
-            // dd($messages);
-            // echo $messages[0]->getHtmlBody;
-            // foreach($messages as $message){
-            //     echo $message->getMessagesResponse();
-            // }
             echo '<a href="'.url('oauth/gmail/logout').'">logout</a>';
             # code...
         } else {
@@ -147,5 +120,10 @@ class HomeController extends Controller
         return TRUE;
         else 
         return FALSE; 
+    }
+
+    public function home()
+    {
+        return view('home');
     }
 }
